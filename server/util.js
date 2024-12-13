@@ -44,3 +44,21 @@ export function transformAndHash(requestBody) {
 
   return payload
 }
+
+export async function ping(request, processedPayload) {
+  try {
+    const response = await fetch(request.body.endpoint, {
+      method: request.method,
+      body: JSON.stringify(processedPayload),
+      headers: request.headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: status ${response.status}`)
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error in ping function:", error);
+    throw error;
+  }
+}

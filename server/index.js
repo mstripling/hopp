@@ -24,9 +24,9 @@ class Server {
     const router = express.Router();
 
     router.get("/", this.homeHandler);
-    router.get('/ping', this.vendorPingHandler);
+    router.get('/ping', this.vendorPingHandler.bind(this));
     router.get('/local', this.localHandler);
-    router.post("/localBuyer", this.localBuyerHandler);
+    router.post("/localBuyer", this.localBuyerHandler.bind(this));
     router.get("/register", this.registerHandler);
 
     this.app.use(router);
@@ -43,12 +43,21 @@ class Server {
       res.sendFile(filePath);
     }
 
-    vendorPingHandler(req, res) {
-      
-      init(req)
-      let body = req.body
-      let processedPayload = (body) => body || ""
-      res.send(processedPayload);
+    async vendorPingHandler(req, res) {
+      try{
+        init(req.body)
+        
+        const processedPayload= transformAndHash(req.body)
+        
+        if (req.body.test === true) {
+          return res.send(processedPayload);
+        }
+        
+        const response = await ping(req, processedPayload)
+        res.send(response)
+      } catch (error) {
+        console.error("Error sending request", error);
+      }
     }
 
     localHandler(req, res) {
@@ -69,4 +78,5 @@ class Server {
 }
 
 const server = new Server();
-server.start(80);
+const PORT = process.env.PORT || 80;
+server.start(PORT);
