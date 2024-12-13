@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Data</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #5C6BC0;
+            margin-top: 40px;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling for Textarea */
+        #dataInput {
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+
+        /* Button Styles */
+        button {
+            background-color: #5C6BC0;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #3f51b5;
+        }
+
+        /* Sample Payload Styling */
+        .sample-payload {
+            background-color: #f1f3f8;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .sample-payload pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Test Data Input</h1>
+        
+        <!-- Form to submit JSON -->
+        <form id="testForm" action="http://localhost/localBuyer" method="POST">
+            <label for="dataInput">Enter JSON Data:</label><br>
+            <textarea id="dataInput" name="data" required placeholder="Enter your JSON here..."></textarea><br>
+            <button type="submit">Send Data</button>
+        </form>
+	<div class="response-log">
+		<h3>Response Log</h3>
+		<ul id="responseList"></ul>
+	</div>
+
+        <div class="sample-payload">
+            <h3>Sample Payload 1</h3>
+            <pre>{
+    "plain": {
+        "zip": 92651,
+        "gender": "Female",
+        "marital_status": "Single"
+    },
+    "hash": {
+        "first_name": "Alice",
+        "last_name": "Smith",
+        "phone": 1234567890,
+        "email": "alice.smith@email.com"
+    },
+    "endpoint": "http://localhost/localBuyer"
+}</pre>
+        </div>
+
+        <div class="sample-payload">
+            <h3>Sample Payload 2 (second server)</h3>
+            <pre>{
+    "plain": {
+        "zip": 94022,
+        "gender": "Male",
+        "marital_status": "Married"
+    },
+    "hash": {
+        "first_name": "Bob",
+        "last_name": "Johnson",
+        "phone": 9876543210,
+        "email": "bob.johnson@email.com"
+    },
+    "endpoint": "http://localhost/localBuyer"
+}</pre>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('testForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the default form submission
+
+            // Get the JSON data from the textarea
+            var jsonData = document.getElementById('dataInput').value;
+
+            // Check if the data is valid JSON
+            try {
+                JSON.parse(jsonData);  // This will throw an error if the JSON is invalid
+            } catch (e) {
+                alert("Invalid JSON data! Please check your input.");
+                return;
+            }
+
+            // Send the JSON data to the server
+            fetch('http://localhost/localbuyer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',  // Set Content-Type to JSON
+                },
+                body: jsonData  // Send the raw JSON from the textarea
+            })
+	    .then(response => {
+		const contentType = response.headers.get("Content-Type");
+		if (contentType && contentType.includes("application/json")) {return response.json();}
+		else {return response.text();}
+	    })  
+            .then(data => {
+                console.log('Response:', data);  // Log the response from the server
+                // You can handle the server response here if needed, like displaying it
+		var responseList = document.getElementById('responseList');
+		var listItem = document.createElement('li');
+		if (typeof data === "object") {
+		listItem.textContent = JSON.stringify(data, null, 2);
+		}
+		else {
+		listItem.textContent = data;
+		}
+		responseList.appendChild(listItem);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+		var responseList = document.getElementById('responseList');
+		var listItem = document.createElement('li');
+		listItem.textContent = 'Error: ' + error.message;
+		responseList.appendChild(listItem);
+            });
+        });
+    </script>
+
+</body>
+</html>

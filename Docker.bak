@@ -1,0 +1,23 @@
+FROM node:18-alpine AS build
+
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+# Copy only package files first
+COPY --chown=node:node package*.json ./
+
+# Switch to node user
+USER node
+
+# Clear npm cache and install dependencies
+RUN npm cache clean --force
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application
+COPY --chown=node:node . .
+
+EXPOSE 80
+CMD ["node", "server/index.js"]
