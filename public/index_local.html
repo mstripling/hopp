@@ -83,7 +83,7 @@
         <h1>Test Data Input</h1>
         
         <!-- Form to submit JSON -->
-        <form id="testForm" action="http://localhost/localBuyer" method="POST">
+        <form id="testForm">
             <label for="dataInput">Enter JSON Data:</label><br>
             <textarea id="dataInput" name="data" required placeholder="Enter your JSON here..."></textarea><br>
             <button type="submit">Send Data</button>
@@ -107,7 +107,7 @@
         "phone": 1234567890,
         "email": "alice.smith@email.com"
     },
-    "endpoint": "http://localhost/localBuyer"
+    "endpoint": "http://localhost:81/localBuyer"
 }</pre>
         </div>
 
@@ -125,7 +125,7 @@
         "phone": 9876543210,
         "email": "bob.johnson@email.com"
     },
-    "endpoint": "http://localhost/localBuyer"
+    "endpoint": "http://localhost:81/localBuyer"
 }</pre>
         </div>
     </div>
@@ -146,12 +146,12 @@
             }
 
             // Send the JSON data to the server
-            fetch('http://localhost/localbuyer', {
+            fetch('http://localhost/ping', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',  // Set Content-Type to JSON
                 },
-                body: jsonData  // Send the raw JSON from the textarea
+                body: JSON.stringify(JSON.parse(jsonData))  // Send the raw JSON from the textarea
             })
 	    .then(response => {
 		const contentType = response.headers.get("Content-Type");

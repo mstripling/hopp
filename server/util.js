@@ -1,21 +1,22 @@
 import crypto from 'crypto';
 
-export function init(req) {
+export function init(body) {
   const requiredKeys = ["plain", "hash", "endpoint"];
   const optionalKeys = ["test", "wrapper"];
 
+  body.plain  = body.plain || {}
+  body.hash = body.hash || {}
+  
   for (let key of requiredKeys) {
-    if (!(key in req.body)) {
+    if (!(key in body)) {
       throw new Error(`Missing key: ${key}`)
     }
   }
 
-  if (req.body.endpoint === "") {
+  if (body.endpoint === "") {
     throw new Error("No endpoint found")
   }
 
-  req.body.plain || ""
-  req.body.hash || ""
 }
 
 export function transformAndHash(requestBody) {
@@ -42,23 +43,60 @@ export function transformAndHash(requestBody) {
     payload[key] = hash256
   }
 
+  console.log(`{start: "end of hash}`)
   return payload
 }
 
 export async function ping(request, processedPayload) {
   try {
+    console.log("Ping function started")
+    
+    // Validate the request object
+    if (!request || !request.body || !request.body.endpoint) {
+      throw new Error("Invalid request object: missing endpoint");
+    }
+
+    // Ensure headers is an object with proper Content-Type
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(request.headers || {})
+    };
+
+    // Ensure the body is a valid JSON string
+    const body = typeof processedPayload === 'string' 
+      ? processedPayload 
+      : JSON.stringify(processedPayload);
+
+    console.log(`Endpoint: ${request.body.endpoint}
+        Method: ${request.method}
+        Body: ${body}
+        Headers: ${JSON.stringify(headers)}`);
+    // Perform the fetch request
     const response = await fetch(request.body.endpoint, {
       method: request.method,
-      body: JSON.stringify(processedPayload),
-      headers: request.headers
+      headers: headers,
+      body: body
     });
 
+    // Check if the response is successful
     if (!response.ok) {
-      throw new Error(`HTTP error: status ${response.status}`)
+      const errorText = await response.text();
+      throw new Error(`HTTP error: status ${response.status}, ${errorText}`);
     }
-    return await response.json();
-  } catch (error) {
+    
+    // Try to parse the response as JSON
+    const responseData = await response.json();
+    console.log('Response received successfully');
+    
+    return responseData;
+    } catch (error) {
     console.error("Error in ping function:", error);
+    
+    // Log more detailed error information
+    if (error.cause) {
+      console.error('Error cause:', error.cause);
+    }
+    
     throw error;
   }
 }

@@ -1,5 +1,5 @@
 import express from 'express';
-import { init, transformAndHash } from  "./util.js";
+import { init, transformAndHash, ping } from  "./util.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -24,7 +24,7 @@ class Server {
     const router = express.Router();
 
     router.get("/", this.homeHandler);
-    router.get('/ping', this.vendorPingHandler.bind(this));
+    router.post("/ping", this.vendorPingHandler.bind(this));
     router.get('/local', this.localHandler);
     router.post("/localBuyer", this.localBuyerHandler.bind(this));
     router.get("/register", this.registerHandler);
@@ -44,16 +44,25 @@ class Server {
     }
 
     async vendorPingHandler(req, res) {
+      console.log(`{start: "before vendor try"}`)
       try{
+        console.log(`{start: "before vendor init"}`)
         init(req.body)
+
+        console.log(`{start: "after vendor init"}`)
         
         const processedPayload= transformAndHash(req.body)
         
+        console.log(`{start: "after processing"}`)
+
         if (req.body.test === true) {
           return res.send(processedPayload);
         }
         
+        console.log(`{start: "after test"}`)
         const response = await ping(req, processedPayload)
+        
+        console.log(`{start: "after ping"}`)
         res.send(response)
       } catch (error) {
         console.error("Error sending request", error);
