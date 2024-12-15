@@ -44,25 +44,17 @@ class Server {
     }
 
     async vendorPingHandler(req, res) {
-      console.log(`{start: "before vendor try"}`)
       try{
-        console.log(`{start: "before vendor init"}`)
         init(req.body)
 
-        console.log(`{start: "after vendor init"}`)
-        
         const processedPayload= transformAndHash(req.body)
-        
-        console.log(`{start: "after processing"}`)
-
-        if (req.body.test === true) {
-          return res.send(processedPayload);
-        }
-        
-        console.log(`{start: "after test"}`)
         const response = await ping(req, processedPayload)
         
-        console.log(`{start: "after ping"}`)
+        if (req.body.test === true) {
+          const responseAndTest = {...response, processedPayload};
+          return res.send(responseAndTest);
+        }
+
         res.send(response)
       } catch (error) {
         console.error("Error sending request", error);
@@ -76,7 +68,7 @@ class Server {
 
     localBuyerHandler(req, res) {
       const payload = transformAndHash(req.body)
-      if (req.body.plain.gender === "Female") {
+      if (req.body.gender === "Female") {
         res.json({bid: 5, payload: payload})
       } else {
         res.json({bid: 4, payload: payload})

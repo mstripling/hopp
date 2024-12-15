@@ -93,9 +93,9 @@
 		<ul id="responseList"></ul>
 	</div>
 
-        <div class="sample-payload">
+        <div class="sample-payload"><button onclick="copy('example-1')">Copy Example</button>
             <h3>Sample Payload 1</h3>
-            <pre>{
+            <pre id="example-1">{
     "plain": {
         "zip": 92651,
         "gender": "Female",
@@ -107,13 +107,15 @@
         "phone": 1234567890,
         "email": "alice.smith@email.com"
     },
-    "endpoint": "http://localhost:81/localBuyer"
-}</pre>
+    "endpoint": "http://localhost:81/localBuyer",
+    "test": false
+}
+</pre>
         </div>
 
-        <div class="sample-payload">
-            <h3>Sample Payload 2 (second server)</h3>
-            <pre>{
+        <div class="sample-payload"><button onclick="copy('example-2')">Copy Example</button>
+            <h3>Sample Payload 2</h3>
+            <pre id="example-2">{
     "plain": {
         "zip": 94022,
         "gender": "Male",
@@ -125,7 +127,8 @@
         "phone": 9876543210,
         "email": "bob.johnson@email.com"
     },
-    "endpoint": "http://localhost:81/localBuyer"
+    "endpoint": "http://localhost:81/localBuyer",
+    "test": false
 }</pre>
         </div>
     </div>
@@ -179,6 +182,19 @@
 		responseList.appendChild(listItem);
             });
         });
+    </script>
+    <script>
+        function copy(elementId) {
+            // Get the text content of the specified element
+            const textToCopy = document.getElementById(elementId).textContent.trim();
+
+            // Use the Clipboard API to copy the text to the clipboard
+            navigator.clipboard.writeText(textToCopy)
+                .catch(err => {
+                    console.error('Error copying text: ', err);
+                    alert('Failed to copy!');
+                });
+        }
     </script>
 
 </body>

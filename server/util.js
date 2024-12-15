@@ -49,29 +49,33 @@ export function transformAndHash(requestBody) {
 
 export async function ping(request, processedPayload) {
   try {
-    console.log("Ping function started")
-    
     // Validate the request object
     if (!request || !request.body || !request.body.endpoint) {
       throw new Error("Invalid request object: missing endpoint");
     }
 
-    // Ensure headers is an object with proper Content-Type
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(request.headers || {})
-    };
-
     // Ensure the body is a valid JSON string
     const body = typeof processedPayload === 'string' 
       ? processedPayload 
       : JSON.stringify(processedPayload);
+    
+    const bodyLength = Buffer.byteLength(body, 'utf8');
+    const headers = { ...request.headers }; // Copy original headers
+    delete headers["content-length"];
+    headers["Content-Length"] = bodyLength.toString(); // Update the Content-Length
+    
+    // Clean up headers to avoid conflicts
+    delete headers["Host"];
+    delete headers["Connection"];
 
-    console.log(`Endpoint: ${request.body.endpoint}
-        Method: ${request.method}
-        Body: ${body}
-        Headers: ${JSON.stringify(headers)}`);
-    // Perform the fetch request
+    console.log(
+      `Endpoint: ${request.body.endpoint}
+      Method: ${request.method}
+      Body: ${body}
+      Content-Length: ${bodyLength}
+      Headers: ${JSON.stringify(headers)}`);
+    
+      // Perform the fetch request
     const response = await fetch(request.body.endpoint, {
       method: request.method,
       headers: headers,
