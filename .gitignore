@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 example.json
-
+*.bak
 
 
 # Editor directories and files

@@ -25,7 +25,7 @@ class Server {
 
     router.get("/", this.homeHandler);
     router.post("/ping", this.vendorPingHandler.bind(this));
-    router.get('/local', this.localHandler);
+    router.get('/local', this.localHandler.bind(this));
     router.post("/localBuyer", this.localBuyerHandler.bind(this));
     router.get("/register", this.registerHandler);
 
@@ -69,9 +69,9 @@ class Server {
     localBuyerHandler(req, res) {
       const payload = transformAndHash(req.body)
       if (req.body.gender === "Female") {
-        res.json({bid: 5, payload: payload})
+        res.json({bid: 5, transactionID: Math.floor(Math.random() * (99999- 10000) + 10000)})
       } else {
-        res.json({bid: 4, payload: payload})
+        res.json({bid: 4, transactionID: Math.floor(Math.random() * (99999- 10000) + 10000)})
       }
     }
 
