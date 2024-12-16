@@ -13,5 +13,7 @@ COPY . .
 
 EXPOSE 80
 
+ENV PUBLIC_PATH /app/public/
+
 # Use correct CMD syntax in JSON array format
 CMD ["node", "server/index.js"]

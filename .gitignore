@@ -13,7 +13,8 @@ dist-ssr
 *.local
 example.json
 *.bak
-
+*.env
+public/index_local.html
 
 # Editor directories and files
 .vscode/*

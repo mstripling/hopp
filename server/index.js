@@ -2,6 +2,11 @@ import express from 'express';
 import { init, transformAndHash, ping } from  "./util.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
+//import dotenv from 'dotenv';
+
+
+//dotenv.config();
+const publicPath = process.env.PUBLIC_PATH
 
 // Get the directory of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -34,12 +39,12 @@ class Server {
   }
   
     homeHandler(req, res) {
-      const filePath = '/home/miles/hopp/public/index.html'
+      const filePath = publicPath + '/hopp/public/index.html'
       res.sendFile(filePath);
     }
 
     registerHandler(req, res) {
-      const filePath = '/home/miles/hopp/public/register.html'
+      const filePath = publicPath + '/hopp/public/index.html'
       res.sendFile(filePath);
     }
 
@@ -50,7 +55,7 @@ class Server {
         const processedPayload= transformAndHash(req.body)
         const response = await ping(req, processedPayload)
         
-        if (req.body.test === true) {
+        if (req.body.test == "true") {
           const responseAndTest = {...response, processedPayload};
           return res.send(responseAndTest);
         }
@@ -62,7 +67,7 @@ class Server {
     }
 
     localHandler(req, res) {
-      const filePath = path.join(__dirname, '..', 'public', 'index_local.html');
+      const filePath = publicPath + '/hopp/public/index.html'
       res.sendFile(filePath);
     }
 
