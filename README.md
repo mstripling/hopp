@@ -1,6 +1,6 @@
 # Hopp 🐇
 
-Hash Ownership Ping Protocol (Hopp) implementation written in Go. 
+Hash Ownership Ping Protocol (Hopp) implementation using Express, Node.js, and React. 
 ## License
 This software is licensed for personal, academic, and non-commercial use only.  
 Commercial use requires prior authorization. See the [LICENSE](./LICENSE) file for details.
